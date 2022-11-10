@@ -1,44 +1,4 @@
-// =============================================================================
-// じゃんけん要素
-// =============================================================================
-let janken_end = 0;
 
-function R_Click(p_janken_r) {
-    let janken = ['グー','チョキ','パー',];//"janken"のリストを作成
-    let janken_r = Math.floor( Math.random() * janken.length);
-    let p_janken = ['グー','チョキ','パー'];//"プレイヤーのjanken"を作成
-
-
-        //勝ち負けの判定
-        if (janken_r === p_janken_r) {
-            Result_end = "じゃんけんに引き分け！今は勝てない……";
-            janken_end = 0;
-        }else if(p_janken_r === 0 && janken_r === 1) 
-        {
-            Result_end = "じゃんけんに勝利！攻撃チャンス！";
-            console.log('じゃんけんに勝ちました');
-        }else if(p_janken_r === 1 && janken_r === 2) 
-        {
-            Result_end = "じゃんけんに勝利！攻撃チャンス！";
-            janken_end = 1;
-        }else if(p_janken_r === 2 && janken_r === 0) 
-        {
-            Result_end = "じゃんけんに勝利！攻撃チャンス！";
-            console.log('じゃんけんに勝ちました');
-            janken_end = 1;
-        }else {
-            Result_end = "じゃんけんに敗北！今は勝てない……";
-            console.log('じゃんけんに負けました');
-            janken_end = 0;
-        }
-
-        //結果を表示するためのプログラム
-        document.getElementById("jankenpon").src="jan" + janken_r + ".png";
-        document.getElementById("Rejan1").innerHTML = p_janken[p_janken_r] +"を選択しました。";
-        document.getElementById("Rejan2").innerHTML = "相手は" + janken[janken_r] +"結果は"+ Result_end;
-        document.getElementById("jankenpon2").src="jan" + p_janken_r + ".png";
-}
-/*----------------------------------------------------------------------------------*/ 
 // =============================================================================
 // スプライト
 // =============================================================================
@@ -175,6 +135,8 @@ Spider.prototype.die = function () {
 
 PlayState = {};
 
+let count_disp = document.getElementById("iine");  
+let coin_count = 0;
 const LEVEL_COUNT = 4;
 
 //キーの入力を検出
@@ -194,6 +156,7 @@ PlayState.init = function (data) {
         }
     }, this);
 
+    //コインの収集
     this.coinPickupCount = 0;
     this.hasKey = false;
     this.win = false;
@@ -265,6 +228,7 @@ PlayState.update = function () {
     this.coinFont.text = `x${this.coinPickupCount}`;
     this.keyIcon.frame = this.hasKey ? 1 : 0;
 };
+
 
 /*----------------------------------------------------------------------------------*/ 
 //接触判定
@@ -411,6 +375,10 @@ PlayState._onHeroVsCoin = function (hero, coin) {
     this.sfx.coin.play();
     coin.kill();
     this.coinPickupCount++;
+
+    //いいねカウンター
+    coin_count += 1;
+    //count_disp.innerHTML = coin_count;
 };
 
 //操作キャラと敵
@@ -462,6 +430,7 @@ PlayState._onHeroVsDoor = function (hero, door) {
     this.game.state.restart(true, false, { level: this.level + 1 });
 };
 
+//UI
 PlayState._createHud = function () {
     const NUMBERS_STR = '0123456789X ';
     this.coinFont = this.game.add.retroFont('font:numbers', 20, 26,

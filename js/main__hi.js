@@ -1,45 +1,4 @@
 // =============================================================================
-// じゃんけん要素
-// =============================================================================
-let janken_end = 0;
-
-function R_Click(p_janken_r) {
-    let janken = ['グー','チョキ','パー',];//"janken"のリストを作成
-    let janken_r = Math.floor( Math.random() * janken.length);
-    let p_janken = ['グー','チョキ','パー'];//"プレイヤーのjanken"を作成
-
-
-        //勝ち負けの判定
-        if (janken_r === p_janken_r) {
-            Result_end = "じゃんけんに引き分け！今は勝てない……";
-            janken_end = 0;
-        }else if(p_janken_r === 0 && janken_r === 1) 
-        {
-            Result_end = "じゃんけんに勝利！攻撃チャンス！";
-            console.log('じゃんけんに勝ちました');
-        }else if(p_janken_r === 1 && janken_r === 2) 
-        {
-            Result_end = "じゃんけんに勝利！攻撃チャンス！";
-            janken_end = 1;
-        }else if(p_janken_r === 2 && janken_r === 0) 
-        {
-            Result_end = "じゃんけんに勝利！攻撃チャンス！";
-            console.log('じゃんけんに勝ちました');
-            janken_end = 1;
-        }else {
-            Result_end = "じゃんけんに敗北！今は勝てない……";
-            console.log('じゃんけんに負けました');
-            janken_end = 0;
-        }
-
-        //結果を表示するためのプログラム
-        document.getElementById("jankenpon").src="jan" + janken_r + ".png";
-        document.getElementById("Rejan1").innerHTML = p_janken[p_janken_r] +"を選択しました。";
-        document.getElementById("Rejan2").innerHTML = "相手は" + janken[janken_r] +"結果は"+ Result_end;
-        document.getElementById("jankenpon2").src="jan" + p_janken_r + ".png";
-}
-/*----------------------------------------------------------------------------------*/ 
-// =============================================================================
 // スプライト
 // =============================================================================
 
@@ -208,7 +167,7 @@ PlayState.preload = function () {
     
     this.game.load.image('font:numbers', 'images/numbers.png');
 
-    this.game.load.image('background', 'images/background2.png');
+    this.game.load.image('background', 'images/background.png');
     this.game.load.image('ground', 'images/ground.png');
     this.game.load.image('grass:8x1', 'images/grass_8x1.png');
     this.game.load.image('grass:6x1', 'images/grass_6x1.png');
@@ -462,6 +421,7 @@ PlayState._onHeroVsDoor = function (hero, door) {
     this.game.state.restart(true, false, { level: this.level + 1 });
 };
 
+//コインチェッカー
 PlayState._createHud = function () {
     const NUMBERS_STR = '0123456789X ';
     this.coinFont = this.game.add.retroFont('font:numbers', 20, 26,

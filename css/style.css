@@ -24,7 +24,14 @@ p{
     margin: 0%;
     font-weight: bold;
     font-size: 36px;
-    padding: 24px 0;
+    padding: 12px;
+}
+
+p2{
+    margin: 0%;
+    font-weight: bold;
+    font-size: 18px;
+    padding: 12px;
 }
 
 button{
@@ -53,7 +60,6 @@ button:active{
     margin: 30px;
 }
 .main__op{
-
     width: auto;
 }
 .main__menu{
@@ -66,6 +72,12 @@ button:active{
     display: flex;
 }
 .jangame{
-        display: flex;
-        align-items: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+.jangame_r{
+    height: 70px;
+    width: 600px;
 }
