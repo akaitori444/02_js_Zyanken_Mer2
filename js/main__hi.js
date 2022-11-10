@@ -1,4 +1,3 @@
-
 // =============================================================================
 // スプライト
 // =============================================================================
@@ -135,7 +134,6 @@ Spider.prototype.die = function () {
 
 PlayState = {};
 
-let coin_count = 0;
 const LEVEL_COUNT = 4;
 
 //キーの入力を検出
@@ -155,9 +153,9 @@ PlayState.init = function (data) {
         }
     }, this);
 
-    //コインの収集
     this.coinPickupCount = 0;
     this.hasKey = false;
+    this.win = false;
     this.level = (data.level || 0) % LEVEL_COUNT;
 };
 
@@ -168,10 +166,8 @@ PlayState.preload = function () {
     this.game.load.json('level:3', 'data/level03.json');
     
     this.game.load.image('font:numbers', 'images/numbers.png');
-    
-    this.game.load.image('background', 'images/background2.png');
-    this.game.load.image('decor', 'images/decor.png');
 
+    this.game.load.image('background', 'images/background.png');
     this.game.load.image('ground', 'images/ground.png');
     this.game.load.image('grass:8x1', 'images/grass_8x1.png');
     this.game.load.image('grass:6x1', 'images/grass_6x1.png');
@@ -182,12 +178,14 @@ PlayState.preload = function () {
     this.game.load.image('icon:coin', 'images/coin_icon.png');
     this.game.load.image('key', 'images/key.png');
 
-    //ゴールの追加
-    //this.game.load.spritesheet('goal', 'images/goal_animated.png', 22, 22);
-
     this.game.load.spritesheet('coin', 'images/coin_animated.png', 22, 22);
 
+
     this.game.load.spritesheet('spider', 'images/spider.png', 42, 32);
+/*
+    this.game.load.spritesheet('spider', 'images/spider.png', 42, 32);
+    this.game.load.spritesheet('spider', 'images/spider.png', 42, 32);
+*/
 
     this.game.load.spritesheet('hero', 'images/hero.png', 36, 42);
     this.game.load.spritesheet('door', 'images/door.png', 42, 66);
@@ -227,14 +225,12 @@ PlayState.update = function () {
     this.keyIcon.frame = this.hasKey ? 1 : 0;
 };
 
-
 /*----------------------------------------------------------------------------------*/ 
 //接触判定
 PlayState._handleCollisions = function () {
     this.game.physics.arcade.collide(this.spiders, this.platforms);
     this.game.physics.arcade.collide(this.spiders, this.enemyWalls);
     this.game.physics.arcade.collide(this.hero, this.platforms);
-    //this.game.physics.arcade.collide(this.hero, this.goal);
 
     this.game.physics.arcade.overlap(this.hero, this.coins, this._onHeroVsCoin,
         null, this);
@@ -266,8 +262,6 @@ PlayState._loadLevel = function (data) {
     // 必要なすべてのグループ/レイヤーを作成します
     this.bgDecoration = this.game.add.group();
     this.platforms = this.game.add.group();
-    //ゴールの出現
-    //this.goal = this.game.add.group();
     this.coins = this.game.add.group();
     this.spiders = this.game.add.group();
     this.enemyWalls = this.game.add.group();
@@ -316,12 +310,27 @@ PlayState._spawnCharacters = function (data) {
         this.spiders.add(sprite);
     }, this);
 
+    // 蜘蛛2の出現
+/*
+    data.spiders.forEach(function (spider) {
+        let sprite = new Spider(this.game, spider.x, spider.y);
+        this.spiders.add(sprite);
+    }, this);
+*/
+    // 蜘蛛2の出現
+/*
+    data.spiders.forEach(function (spider) {
+        let sprite = new Spider(this.game, spider.x, spider.y);
+        this.spiders.add(sprite);
+    }, this);
+*/
+
     // キャラの出現
     this.hero = new Hero(this.game, data.hero.x, data.hero.y);
     this.game.add.existing(this.hero);
 };
 
-//コインのアニメ
+//コイン
 PlayState._spawnCoin = function (coin) {
     let sprite = this.coins.create(coin.x, coin.y, 'coin');
     sprite.anchor.set(0.5, 0.5);
@@ -332,19 +341,6 @@ PlayState._spawnCoin = function (coin) {
     sprite.animations.add('rotate', [0, 1, 2, 1], 6, true); // 6fps, looped
     sprite.animations.play('rotate');
 };
-
-/*
-PlayState._spawnGoal = function (goal) {
-    let sprite = this.goals.create(goal.x, goal.y, 'goal');
-    sprite.anchor.set(0.5, 0.5);
-
-    this.game.physics.enable(sprite);
-    sprite.body.allowGravity = false;
-
-    sprite.animations.add('rotate', [0, 1, 2, 1], 6, true); // 6fps, looped
-    sprite.animations.play('rotate');
-};
-*/
 
 PlayState._spawnDoor = function (x, y) {
     this.door = this.bgDecoration.create(x, y, 'door');
@@ -385,18 +381,35 @@ PlayState._onHeroVsEnemy = function (hero, enemy) {
         this.sfx.stomp.play();
     }
     // じゃんけん勝利時に敵を倒すギミック
-    //else if(janken_end = 1) { hero.bounce();enemy.die();this.sfx.stomp.play();}
+    else if(janken_end = 1) { 
+        hero.bounce();enemy.die();this.sfx.stomp.play();
+    }
     else { // ゲームオーバー→ゲーム再開
         this.sfx.stomp.play();
-        this.game.physics.enable(this.door);
-        setTimeout(function(){
-            location.href = 'gameover.html';
-        }, 100);
-        //ループ版
-        //this.game.state.restart(true, false, {level: this.level});
+        this.game.state.restart(true, false, {level: this.level});
     }
 };
 
+/*
+let gameover = false;
+//敵との当たり判定　第一引数：パックマンオブジェクト　第二引数以降：敵オブジェクト
+export function collision_to_enemy(hero, ...Object)
+{
+	for (let i = 0; i < arguments.length - 1; i++) {
+		if ((hero.x === Object[i].x) && (hero.y === Object[i].y)) {
+			if ((hero.janken === janken.pa && Object[i].janken === janken.gu) ||
+				(hero.janken === janken.gu && Object[i].janken === janken.choki) ||
+				(hero.janken === janken.choki && Object[i].janken === janken.pa)) {
+				gameover = false;
+			} else {
+				gameover = true;
+			}
+			return true;
+		}
+	}
+	return false;
+}
+*/
 PlayState._onHeroVsKey = function (hero, key) {
     this.sfx.key.play();
     key.kill();
@@ -405,15 +418,10 @@ PlayState._onHeroVsKey = function (hero, key) {
 
 PlayState._onHeroVsDoor = function (hero, door) {
     this.sfx.door.play();
-    this.LV_count++;
     this.game.state.restart(true, false, { level: this.level + 1 });
-    if( this.level > 2 ){location.href = 'game__clear.html';}
-    else{this.game.state.restart(true, false, { level: this.level + 1 })}
 };
 
-PlayState._onHeroVsgoal = function (hero, goal) {location.href = 'game__clear.html';}
-
-//UI
+//コインチェッカー
 PlayState._createHud = function () {
     const NUMBERS_STR = '0123456789X ';
     this.coinFont = this.game.add.retroFont('font:numbers', 20, 26,
@@ -433,6 +441,8 @@ PlayState._createHud = function () {
     this.hud.add(this.keyIcon);
     this.hud.position.set(10, 10);
 };
+
+
 
 // =============================================================================
 // エントリーポイント
