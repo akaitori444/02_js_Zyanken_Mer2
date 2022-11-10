@@ -137,6 +137,7 @@ PlayState = {};
 
 let count_disp = document.getElementById("iine");  
 let coin_count = 0;
+let LV_count = 0;
 const LEVEL_COUNT = 4;
 
 //キーの入力を検出
@@ -181,6 +182,8 @@ PlayState.preload = function () {
     this.game.load.image('invisible-wall', 'images/invisible_wall.png');
     this.game.load.image('icon:coin', 'images/coin_icon.png');
     this.game.load.image('key', 'images/key.png');
+    //ゴールの追加
+    this.game.load.spritesheet('goal', 'images/goal_icon.png', 22, 22);
 
     this.game.load.spritesheet('coin', 'images/coin_animated.png', 22, 22);
 
@@ -236,6 +239,7 @@ PlayState._handleCollisions = function () {
     this.game.physics.arcade.collide(this.spiders, this.platforms);
     this.game.physics.arcade.collide(this.spiders, this.enemyWalls);
     this.game.physics.arcade.collide(this.hero, this.platforms);
+    this.game.physics.arcade.collide(this.hero, this.goal);
 
     this.game.physics.arcade.overlap(this.hero, this.coins, this._onHeroVsCoin,
         null, this);
@@ -267,6 +271,8 @@ PlayState._loadLevel = function (data) {
     // 必要なすべてのグループ/レイヤーを作成します
     this.bgDecoration = this.game.add.group();
     this.platforms = this.game.add.group();
+    //ゴールの出現
+    this.goal = this.game.add.group();
     this.coins = this.game.add.group();
     this.spiders = this.game.add.group();
     this.enemyWalls = this.game.add.group();
@@ -315,21 +321,6 @@ PlayState._spawnCharacters = function (data) {
         this.spiders.add(sprite);
     }, this);
 
-    // 蜘蛛2の出現
-/*
-    data.spiders.forEach(function (spider) {
-        let sprite = new Spider(this.game, spider.x, spider.y);
-        this.spiders.add(sprite);
-    }, this);
-*/
-    // 蜘蛛2の出現
-/*
-    data.spiders.forEach(function (spider) {
-        let sprite = new Spider(this.game, spider.x, spider.y);
-        this.spiders.add(sprite);
-    }, this);
-*/
-
     // キャラの出現
     this.hero = new Hero(this.game, data.hero.x, data.hero.y);
     this.game.add.existing(this.hero);
@@ -377,8 +368,7 @@ PlayState._onHeroVsCoin = function (hero, coin) {
     this.coinPickupCount++;
 
     //いいねカウンター
-    coin_count += 1;
-    //count_disp.innerHTML = coin_count;
+    this.coin_count++;
 };
 
 //操作キャラと敵
@@ -390,12 +380,15 @@ PlayState._onHeroVsEnemy = function (hero, enemy) {
         this.sfx.stomp.play();
     }
     // じゃんけん勝利時に敵を倒すギミック
-    else if(janken_end = 1) { 
-        hero.bounce();enemy.die();this.sfx.stomp.play();
-    }
+    //else if(janken_end = 1) { hero.bounce();enemy.die();this.sfx.stomp.play();}
     else { // ゲームオーバー→ゲーム再開
         this.sfx.stomp.play();
-        this.game.state.restart(true, false, {level: this.level});
+        this.game.physics.enable(this.door);
+        setTimeout(function(){
+            location.href = 'gameover.html';
+        }, 100);
+        //ループ版
+        //this.game.state.restart(true, false, {level: this.level});
     }
 };
 
@@ -427,8 +420,12 @@ PlayState._onHeroVsKey = function (hero, key) {
 
 PlayState._onHeroVsDoor = function (hero, door) {
     this.sfx.door.play();
+    this.LV_count++;
     this.game.state.restart(true, false, { level: this.level + 1 });
+    //if( LV_count < 3 ){this.game.state.restart(true, false, { level: this.level + 1 })}else{location.href = 'game__clear.html';}
 };
+
+PlayState._onHeroVsgoal = function (hero, goal) {location.href = 'game__clear.html';}
 
 //UI
 PlayState._createHud = function () {
