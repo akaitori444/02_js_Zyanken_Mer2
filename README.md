@@ -3,7 +3,7 @@
 #　HINOTER
 
 ##　URL
-- https://akaitori444.github.io/02_js_Zyanken/
+- https://akaitori444.github.io/02_js_Zyanken_Mer2/
 
 ##　概要（どんなものか，どうやって使うか，など）
 - G's課題_02「じゃんけん」改造
