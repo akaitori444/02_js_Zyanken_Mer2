@@ -171,8 +171,10 @@ PlayState.preload = function () {
     this.game.load.json('level:3', 'data/level03.json');
     
     this.game.load.image('font:numbers', 'images/numbers.png');
-
+    
     this.game.load.image('background', 'images/background2.png');
+    this.game.load.image('decor', 'images/decor.png');
+
     this.game.load.image('ground', 'images/ground.png');
     this.game.load.image('grass:8x1', 'images/grass_8x1.png');
     this.game.load.image('grass:6x1', 'images/grass_6x1.png');
@@ -182,17 +184,13 @@ PlayState.preload = function () {
     this.game.load.image('invisible-wall', 'images/invisible_wall.png');
     this.game.load.image('icon:coin', 'images/coin_icon.png');
     this.game.load.image('key', 'images/key.png');
+
     //ゴールの追加
-    this.game.load.spritesheet('goal', 'images/goal_icon.png', 22, 22);
+    this.game.load.spritesheet('goal', 'images/goal_animated.png', 22, 22);
 
     this.game.load.spritesheet('coin', 'images/coin_animated.png', 22, 22);
 
-
     this.game.load.spritesheet('spider', 'images/spider.png', 42, 32);
-/*
-    this.game.load.spritesheet('spider', 'images/spider.png', 42, 32);
-    this.game.load.spritesheet('spider', 'images/spider.png', 42, 32);
-*/
 
     this.game.load.spritesheet('hero', 'images/hero.png', 36, 42);
     this.game.load.spritesheet('door', 'images/door.png', 42, 66);
@@ -326,7 +324,7 @@ PlayState._spawnCharacters = function (data) {
     this.game.add.existing(this.hero);
 };
 
-//コイン
+//コインのアニメ
 PlayState._spawnCoin = function (coin) {
     let sprite = this.coins.create(coin.x, coin.y, 'coin');
     sprite.anchor.set(0.5, 0.5);
@@ -336,6 +334,18 @@ PlayState._spawnCoin = function (coin) {
 
     sprite.animations.add('rotate', [0, 1, 2, 1], 6, true); // 6fps, looped
     sprite.animations.play('rotate');
+};
+
+PlayState._spawnGoal = function (goal) {
+    let sprite = this.goals.create(goal.x, goal.y, 'goal');
+    sprite.anchor.set(0.5, 0.5);
+
+    this.game.physics.enable(sprite);
+    sprite.body.allowGravity = false;
+
+    sprite.animations.add('rotate', [0, 1, 2, 1], 6, true); // 6fps, looped
+    sprite.animations.play('rotate');
+
 };
 
 PlayState._spawnDoor = function (x, y) {
@@ -392,26 +402,6 @@ PlayState._onHeroVsEnemy = function (hero, enemy) {
     }
 };
 
-/*
-let gameover = false;
-//敵との当たり判定　第一引数：パックマンオブジェクト　第二引数以降：敵オブジェクト
-export function collision_to_enemy(hero, ...Object)
-{
-	for (let i = 0; i < arguments.length - 1; i++) {
-		if ((hero.x === Object[i].x) && (hero.y === Object[i].y)) {
-			if ((hero.janken === janken.pa && Object[i].janken === janken.gu) ||
-				(hero.janken === janken.gu && Object[i].janken === janken.choki) ||
-				(hero.janken === janken.choki && Object[i].janken === janken.pa)) {
-				gameover = false;
-			} else {
-				gameover = true;
-			}
-			return true;
-		}
-	}
-	return false;
-}
-*/
 PlayState._onHeroVsKey = function (hero, key) {
     this.sfx.key.play();
     key.kill();
@@ -457,4 +447,5 @@ window.onload = function () {
     let game = new Phaser.Game(960, 600, Phaser.AUTO, 'game');
     game.state.add('play', PlayState);
     game.state.start('play', true, false, {level: 0});
+    document.getElementById("iine").innerHTML = coin_count;
 };
