@@ -39,18 +39,15 @@ Hero.prototype.move = function (direction) {
 
 Hero.prototype.jump = function () {
     const JUMP_SPEED = 600;
-    //無限ジャンプ
-    this.body.velocity.y = -JUMP_SPEED;
     let canJump = this.body.touching.down;
-    return canJump;
-    /*
-    let canJump = this.body.touching.down;
+
+    
     if (canJump) {
         this.body.velocity.y = -JUMP_SPEED;
     }
 
     return canJump;
-*/
+
 };
 
 Hero.prototype.bounce = function () {
@@ -332,19 +329,6 @@ PlayState._spawnCoin = function (coin) {
     sprite.animations.add('rotate', [0, 1, 2, 1], 6, true); // 6fps, looped
     sprite.animations.play('rotate');
 };
-
-/*
-PlayState._spawnGoal = function (goal) {
-    let sprite = this.goals.create(goal.x, goal.y, 'goal');
-    sprite.anchor.set(0.5, 0.5);
-
-    this.game.physics.enable(sprite);
-    sprite.body.allowGravity = false;
-
-    sprite.animations.add('rotate', [0, 1, 2, 1], 6, true); // 6fps, looped
-    sprite.animations.play('rotate');
-};
-*/
 
 PlayState._spawnDoor = function (x, y) {
     this.door = this.bgDecoration.create(x, y, 'door');
